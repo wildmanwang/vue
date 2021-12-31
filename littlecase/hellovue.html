@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>初始Vue</title>
+        <!-- 得用开发环境版本，包含了有帮助的命令行警告 -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    </head>
+    <body>
+        <!-- 先定义一个最外层的div容器。来接收数据。  -->
+        <div id="app">
+            <!-- 用花括号的方式，去接收动态变量，可以修改的内容。  -->
+            {{message}} 
+            {{variable}}
+            hello {{variable3}} 
+            天 {{variable4}}
+            {{variable5}}
+        </div>
+        <script>
+        var app = new Vue({
+            el: '#app',
+            data : {
+                message:'Hello Vue!',
+                variable:'欢迎来到Vue框架世界',
+                variable3:'张三',// 等于字符串拼接了。 比如卦象拼接。 
+                variable4:'地否卦象',
+                variable5:'{{2个花括号，这里叫法是插值表达式。插入一个值的意思}}'
+            }
+        })
+        </script>
+    </body>
+</html>

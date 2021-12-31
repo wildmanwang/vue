@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+	<head>
+		<meta charset="UTF-8">
+		<title>vuejs练习</title>
+		<script src='http://cdn.jsdelivr.net/vue/1.0.26/vue.min.js'></script>
+	</head>
+	<body>
+		<!-- 父组件模板 -->
+		<div id="events-example">
+			<p>Messages: {{ messages | json }}</p>
+			<child></child>
+		</div>
+		<script src="parent-child-msg.js"></script>
+		<script>
+			var app = new Vue({
+				el: '#events-example',
+				data: {
+					messages: []
+				},
+				// 在创建实例时 `events` 选项简单地调用 `$on`
+				events: {
+					'child-msg': function (msg) {
+						// 事件回调内的 `this` 自动绑定到注册它的实例上
+						this.messages.push(msg)
+					}
+				}
+			})
+		</script>
+	</body>
+</html>
