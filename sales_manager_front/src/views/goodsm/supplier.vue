@@ -70,7 +70,7 @@ export default {
     methods: {
         fetchData() {
             this.listLoading = true
-            fetchBasicDataList({"dataType": "supplier"}).then(response => {
+            fetchBasicDataList({"dataType": "supplier", "query": {}}).then(response => {
                 this.list = response.data.items
                 this.listLoading = false
             })

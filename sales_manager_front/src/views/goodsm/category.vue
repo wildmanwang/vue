@@ -1,11 +1,18 @@
 <template>
     <div class="app-container">
-        <el-col :span="12">
-            <el-input v-model="queryStr" placeholder="请输入商品类别名称" size="small"></el-input>
+        <el-col :span="3">
+            <el-radio-group v-model="qStatus" size="small" @input="fetchData">
+                <el-radio-button :label="-1">全部</el-radio-button>
+                <el-radio-button :label="1">正常</el-radio-button>
+                <el-radio-button :label="0">无效</el-radio-button>
+            </el-radio-group>
+        </el-col>
+        <el-col :span="8">
+            <el-input v-model="qName" placeholder="请输入商品类别名称" size="small" @change="fetchData"></el-input>
         </el-col>
         <el-button type="primary" size="small" icon="el-icon-search" @click="fetchData">查询</el-button>
         <el-button type="danger" size="small" icon="el-icon-circle-plus" @click="newData">新增</el-button>
-        <el-table v-loading="listLoading" :data="list" stripe border style="width: 100%">
+        <el-table v-loading="listLoading" :data="list" stripe border style="width: 100%; margin-top: 5px;">
             <el-table-column label="ID" width="60" align="center">
                 <template slot-scope="{row}">
                     {{ row.id }}
@@ -43,9 +50,9 @@
                         <p>确定要删除 [ {{ row.name }} ] 吗？</p>
                         <div style="text-align: right; margin: 0">
                             <el-button size="mini" type="text" @click="closeMsgDialog(`node-${row.id}`)">取消</el-button>
-                            <el-button type="primary" size="mini" @click="deleteDataSave">确定</el-button>
+                            <el-button type="primary" size="mini" @click="deleteDataSave(`node-${row.id}`)">确定</el-button>
                         </div>
-                        <el-button slot="reference" type="danger" size="mini" @click="deleteData(row,$index)">
+                        <el-button slot="reference" type="danger" size="mini" style="margin-left: 10px" @click="deleteData(row,$index)">
                             删除
                         </el-button>
                     </el-popover>
@@ -88,7 +95,8 @@ export default {
     name: 'Category',
     data() {
         return {
-            queryStr: '',
+            qName: '',
+            qStatus: 1,
             list: null,
             temp: {
                 id: undefined,
@@ -113,7 +121,7 @@ export default {
     methods: {
         fetchData() {
             this.listLoading = true
-            fetchBasicDataList({"dataType": "category"}).then(response => {
+            fetchBasicDataList({"dataType": "category", "query": {"name": this.qName, "status": this.qStatus}}).then(response => {
                 this.list = response.data.items
                 this.listLoading = false
             })
@@ -218,9 +226,10 @@ export default {
         closeMsgDialog(refname) {
             this.$refs[refname].doClose()
         },
-        deleteDataSave() {
+        deleteDataSave(refname) {
             this.listLoading = true
             deleteBasicData({"dataType": "category", "id": this.row.id}).then(response => {
+                this.$refs[refname].doClose()
                 if(response.data.result){
                     this.$notify({
                         title: 'Success',
