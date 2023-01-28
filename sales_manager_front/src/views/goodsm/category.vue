@@ -12,25 +12,25 @@
         </el-col>
         <el-button type="primary" size="small" icon="el-icon-search" @click="fetchData">查询</el-button>
         <el-button type="danger" size="small" icon="el-icon-circle-plus" @click="newData">新增</el-button>
-        <el-table v-loading="listLoading" :data="list" stripe border style="width: 100%; margin-top: 5px;">
-            <el-table-column label="ID" width="60" align="center">
+        <el-table v-loading="listLoading" :data="list" stripe border style="width: 100%; margin-top: 5px;" @sort-change="sortChange">
+            <el-table-column prop="id" label="ID" width="60" align="center" sortable="custom">
                 <template slot-scope="{row}">
                     {{ row.id }}
                 </template>
             </el-table-column>
-            <el-table-column label="名称" width="240" align="left">
+            <el-table-column prop="name" label="名称" width="240" align="left" sortable="custom">
                 <template slot-scope="{row}">
                     {{ row.name }}
                 </template>
             </el-table-column>
-            <el-table-column label="排序号" width="80" align="left">
+            <el-table-column prop="order_num" label="排序号" width="80" align="left" sortable="custom">
                 <template slot-scope="{row}">
                     {{ row.order_num }}
                 </template>
             </el-table-column>
             <el-table-column label="状态" width="120" align="left">
                 <template slot-scope="{row}">
-                    {{ row.status }}
+                    {{ row.enum_status }}
                 </template>
             </el-table-column>
             <el-table-column label="备注" align="left">
@@ -59,6 +59,8 @@
                 </template>
             </el-table-column>
         </el-table>
+
+        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="fetchData" />
 
         <el-dialog :title="dataDialogTitle" :visible.sync="dataDialogVisible">
             <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
@@ -90,14 +92,23 @@
 
 <script>
 import { fetchBasicDataList, deleteBasicData, newBasicData, modifyBasicData } from '@/api/goodsm'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
     name: 'Category',
+    components: { Pagination },
     data() {
         return {
             qName: '',
             qStatus: 1,
             list: null,
+            total: 0,
+            listQuery: {
+                page: 1,
+                limit: 10,
+                sortCol: '',
+                sortType: 'asc'
+            },
             temp: {
                 id: undefined,
                 name: '',
@@ -121,10 +132,21 @@ export default {
     methods: {
         fetchData() {
             this.listLoading = true
-            fetchBasicDataList({"dataType": "category", "query": {"name": this.qName, "status": this.qStatus}}).then(response => {
+            fetchBasicDataList({"dataType": "category", "query": {"name": this.qName, "status": this.qStatus}, "page": this.listQuery}).then(response => {
                 this.list = response.data.items
+                this.total = response.data.total
                 this.listLoading = false
             })
+        },
+        sortChange(data) {
+            const { prop, order } = data
+            this.listQuery.sortCol = prop
+            if (order === 'ascending') {
+                this.listQuery.sortType = 'asc'
+            } else {
+                this.listQuery.sortType = 'desc'
+            }
+            this.fetchData()
         },
         newData() {
             this.temp = {

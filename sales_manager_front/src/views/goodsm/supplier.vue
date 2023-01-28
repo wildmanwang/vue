@@ -50,18 +50,28 @@
                 </template>
             </el-table-column>
         </el-table>
+
+        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="fetchData" />
+
     </div>
 </template>
 
 <script>
 import { fetchBasicDataList } from '@/api/goodsm'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
     name: 'Supplier',
+    components: { Pagination },
     data() {
         return {
             queryStr: '',
-            list: null
+            list: null,
+            total: 0,
+            listQuery: {
+                page: 1,
+                limit: 10
+            }
         }
     },
     created() {
@@ -70,8 +80,9 @@ export default {
     methods: {
         fetchData() {
             this.listLoading = true
-            fetchBasicDataList({"dataType": "supplier", "query": {}}).then(response => {
+            fetchBasicDataList({"dataType": "supplier", "query": {}, "page": this.listQuery}).then(response => {
                 this.list = response.data.items
+                this.total = response.data.total
                 this.listLoading = false
             })
         }
