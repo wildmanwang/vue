@@ -12,7 +12,8 @@
         </el-col>
         <el-button type="primary" size="small" icon="el-icon-search" @click="fetchData">查询</el-button>
         <el-button type="danger" size="small" icon="el-icon-circle-plus" @click="newData">新增</el-button>
-        <el-table v-loading="listLoading" :data="list" stripe border style="width: 100%; margin-top: 5px;" @sort-change="sortChange">
+        <el-table v-loading="listLoading" :data="list" stripe border style="width: 100%; margin-top: 5px;"
+            @sort-change="sortChange">
             <el-table-column prop="id" label="ID" width="60" align="center" sortable="custom">
                 <template slot-scope="{row}">
                     {{ row.id }}
@@ -40,19 +41,21 @@
             </el-table-column>
             <el-table-column label="操作" width="230" align="center">
                 <template slot-scope="{row,$index}">
-                    <el-button type="primary" size="mini" @click="modifyData(row,$index)">
+                    <el-button type="primary" size="mini" @click="modifyData(row, $index)">
                         修改
                     </el-button>
-                    <el-button type="success" size="mini" @click="viewData(row,$index)">
+                    <el-button type="success" size="mini" @click="viewData(row, $index)">
                         查看
                     </el-button>
                     <el-popover placement="left" width="320" trigger="click" :ref="`node-${row.id}`">
                         <p>确定要删除 [ {{ row.name }} ] 吗？</p>
                         <div style="text-align: right; margin: 0">
                             <el-button size="mini" type="text" @click="closeMsgDialog(`node-${row.id}`)">取消</el-button>
-                            <el-button type="primary" size="mini" @click="deleteDataSave(`node-${row.id}`)">确定</el-button>
+                            <el-button type="primary" size="mini"
+                                @click="deleteDataSave(`node-${row.id}`)">确定</el-button>
                         </div>
-                        <el-button slot="reference" type="danger" size="mini" style="margin-left: 10px" @click="deleteData(row,$index)">
+                        <el-button slot="reference" type="danger" size="mini" style="margin-left: 10px"
+                            @click="deleteData(row, $index)">
                             删除
                         </el-button>
                     </el-popover>
@@ -60,29 +63,34 @@
             </el-table-column>
         </el-table>
 
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="fetchData" />
+        <pagination v-show="total > 0" :total="total" :page.sync="listPage.page" :limit.sync="listPage.limit"
+            @pagination="fetchData" />
 
         <el-dialog :title="dataDialogTitle" :visible.sync="dataDialogVisible">
-            <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+            <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
+                style="width: 400px; margin-left:50px;">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="temp.name" :disabled="dataDialogStatus==='查看'?true:false" />
+                    <el-input v-model="temp.name" :disabled="dataDialogStatus === '查看' ? true : false" />
                 </el-form-item>
                 <el-form-item label="排序号" prop="order_num">
-                    <el-input v-model="temp.order_num" :disabled="dataDialogStatus==='查看'?true:false" />
+                    <el-input v-model="temp.order_num" :disabled="dataDialogStatus === '查看' ? true : false" />
                 </el-form-item>
                 <el-form-item label="状态" prop="status">
-                    <el-radio v-model="temp.status" :label="0" :disabled="dataDialogStatus==='查看'?true:false">无效</el-radio>
-                    <el-radio v-model="temp.status" :label="1" :disabled="dataDialogStatus==='查看'?true:false">正常</el-radio>
+                    <el-radio v-model="temp.status" :label="0"
+                        :disabled="dataDialogStatus === '查看' ? true : false">无效</el-radio>
+                    <el-radio v-model="temp.status" :label="1"
+                        :disabled="dataDialogStatus === '查看' ? true : false">正常</el-radio>
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
-                    <el-input v-model="temp.remark" :disabled="dataDialogStatus==='查看'?true:false" />
+                    <el-input v-model="temp.remark" :disabled="dataDialogStatus === '查看' ? true : false" />
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dataDialogVisible = false">
                     取消
                 </el-button>
-                <el-button type="primary" v-show="dataDialogStatus==='查看'?false:true" @click="dataDialogStatus==='新增'?newDataSave():modifyDataSave()">
+                <el-button type="primary" v-show="dataDialogStatus === '查看' ? false : true"
+                    @click="dataDialogStatus === '新增' ? newDataSave() : modifyDataSave()">
                     确定
                 </el-button>
             </div>
@@ -103,12 +111,14 @@ export default {
             qStatus: 1,
             list: null,
             total: 0,
-            listQuery: {
+            // 数据分页、排序
+            listPage: {
                 page: 1,
                 limit: 10,
                 sortCol: '',
                 sortType: 'asc'
             },
+            // 单条数据
             temp: {
                 id: undefined,
                 name: '',
@@ -131,24 +141,27 @@ export default {
     },
     methods: {
         fetchData() {
+            // 查询数据
             this.listLoading = true
-            fetchBasicDataList({"dataType": "category", "query": {"name": this.qName, "status": this.qStatus}, "page": this.listQuery}).then(response => {
+            fetchBasicDataList({ "dataType": "category", "query": this.listQuery, "page": this.listPage }).then(response => {
                 this.list = response.data.items
                 this.total = response.data.total
                 this.listLoading = false
             })
         },
         sortChange(data) {
+            // 排序
             const { prop, order } = data
-            this.listQuery.sortCol = prop
+            this.listPage.sortCol = prop
             if (order === 'ascending') {
-                this.listQuery.sortType = 'asc'
+                this.listPage.sortType = 'asc'
             } else {
-                this.listQuery.sortType = 'desc'
+                this.listPage.sortType = 'desc'
             }
             this.fetchData()
         },
         newData() {
+            // 新增
             this.temp = {
                 id: undefined,
                 name: '',
@@ -161,12 +174,18 @@ export default {
             this.dataDialogVisible = true
         },
         newDataSave() {
+            // 新增保存
             this.$refs['dataForm'].validate((valid) => {
-                if(valid) {
+                if (valid) {
                     this.listLoading = true
-                    newBasicData({"dataType": "category", "data": this.temp}).then(response => {
-                        if(response.data.result){
+                    newBasicData({ "dataType": "category", "data": this.temp }).then(response => {
+                        if (response.data.result) {
                             this.temp['id'] = response.data.dataNumber
+                            if (this.temp['status'] === 1) {
+                                this.temp['enum_status'] = '正常'
+                            } else {
+                                this.temp['enum_status'] = '无效'
+                            }
                             this.list.unshift(this.temp)
                             this.dataDialogVisible = false
                             this.$notify({
@@ -189,6 +208,7 @@ export default {
             })
         },
         modifyData(row, index) {
+            // 修改
             this.temp = {
                 id: row.id,
                 name: row.name,
@@ -202,11 +222,17 @@ export default {
             this.dataDialogVisible = true
         },
         modifyDataSave() {
+            // 修改保存
             this.$refs['dataForm'].validate((valid) => {
-                if(valid) {
+                if (valid) {
                     this.listLoading = true
-                    modifyBasicData({"dataType": "category", "data": this.temp}).then(response => {
-                        if(response.data.result){
+                    modifyBasicData({ "dataType": "category", "data": this.temp }).then(response => {
+                        if (response.data.result) {
+                            if (this.temp['status'] === 1) {
+                                this.temp['enum_status'] = '正常'
+                            } else {
+                                this.temp['enum_status'] = '无效'
+                            }
                             this.list.splice(this.index, 1, this.temp)
                             this.dataDialogVisible = false
                             this.index = -1
@@ -230,6 +256,7 @@ export default {
             })
         },
         viewData(row, index) {
+            // 查看
             this.temp = {
                 id: row.id,
                 name: row.name,
@@ -242,17 +269,20 @@ export default {
             this.dataDialogVisible = true
         },
         deleteData(row, index) {
+            // 删除
             this.row = row
             this.index = index
         },
         closeMsgDialog(refname) {
+            // 关闭弹窗
             this.$refs[refname].doClose()
         },
         deleteDataSave(refname) {
+            // 删除保存
             this.listLoading = true
-            deleteBasicData({"dataType": "category", "id": this.row.id}).then(response => {
+            deleteBasicData({ "dataType": "category", "id": this.row.id }).then(response => {
                 this.$refs[refname].doClose()
-                if(response.data.result){
+                if (response.data.result) {
                     this.$notify({
                         title: 'Success',
                         message: 'Delete Successfully',
@@ -273,9 +303,19 @@ export default {
             })
             this.listLoading = false
         }
+    },
+    computed: {
+        listQuery() {
+            // 生成查询条件
+            return {para: [
+                { colname: "name", oper: "like", value: this.qName + "%" },
+                { colname: "status", oper: "==", value: this.qStatus }
+            ]}
+        }
     }
 }
 </script>
 
 <style>
+
 </style>
