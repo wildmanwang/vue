@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function fetchBasicDataList(query) {
   return request({
-    url: '/basicDataList',
+    url: '/goods/basicDataList',
     method: 'get',
     params: query
   })
@@ -10,7 +10,7 @@ export function fetchBasicDataList(query) {
 
 export function deleteBasicData(data) {
   return request({
-    url: '/basicDataDelete',
+    url: '/goods/basicDataDelete',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function deleteBasicData(data) {
 
 export function newBasicData(data) {
   return request({
-    url: '/basicDataNew',
+    url: '/goods/basicDataNew',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function newBasicData(data) {
 
 export function modifyBasicData(data) {
   return request({
-    url: '/basicDataModify',
+    url: '/goods/basicDataModify',
     method: 'post',
     data
   })
