@@ -16,6 +16,8 @@
 ### 异常处理
 ### 跨域问题cors
 ### 动态菜单
+    https://blog.csdn.net/qq_27602491/article/details/108723047
+    https://blog.csdn.net/qq_36873710/article/details/124430511
 ### 基础资料模板
 ### 单据模板
 ### 报表模板
